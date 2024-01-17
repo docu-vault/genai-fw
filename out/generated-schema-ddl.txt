@@ -1,0 +1,26 @@
+```
+CREATE TABLE typical_order (
+    id INT NOT NULL AUTO_INCREMENT,
+    order_date TIMESTAMP,
+    customer_id INT,
+    total_price DECIMAL(10, 2),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE products (
+    id INT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255),
+    price DECIMAL(10, 2),
+    PRIMARY KEY (id)
+);
+
+CREATE TABLE order_items (
+    id INT NOT NULL AUTO_INCREMENT,
+    order_id INT,
+    product_id INT,
+    quantity INT,
+    PRIMARY KEY (id),
+    FOREIGN KEY (order_id) REFERENCES typical_order(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+```

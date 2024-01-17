@@ -7,7 +7,7 @@ generation_config = {
   "temperature": 0.9,
   "top_p": 1,
   "top_k": 1,
-  "max_output_tokens": 2048,
+  "max_output_tokens": 204800,
 }
 
 safety_settings = [
@@ -64,7 +64,7 @@ class gemini_ai_assistant ():
     def printResponse(self):
         print(self._response.text)
 
-
+# this is for testing purposes at module level
 if __name__ == "__main__":
     ##genai.configure(api_key="AIzaSyDluMvWjaSjBjxzPti6d1FMoR-Saftfy9Q")
     ctx = {}
@@ -75,6 +75,6 @@ if __name__ == "__main__":
     prompt_parts = [
     "Given a typical order and products, please generate a database schema for h2 in-memory database ",
     ]   
-    res = ait.generateContent(prompt_parts)
-    ait.printResponse()
+    #res = ait.generateContent(prompt_parts)
+    #ait.printResponse()
     

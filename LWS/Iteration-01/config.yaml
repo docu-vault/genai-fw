@@ -8,4 +8,8 @@ output-profile:
   java-package: com.example.demo
   java-class-name: DemoApplication
 config_files:
-  - LWS\Iteration-01\generate-schema.yaml
+  - LWS\Iteration-01\01-generate-datahub-ddl.yaml
+  - LWS\Iteration-01\02-gen-publisher-openapi-spec.yaml
+  - LWS\Iteration-01\03-gen-books-openapi-spec.yaml
+  - LWS\Iteration-01\04-gen-book-code.yaml
+  - LWS\Iteration-01\06-gen-book-search-functionality.yaml

@@ -1,0 +1,152 @@
+```openapi
+openapi: 3.0.0
+info:
+  title: Library Management System - API Documentation
+  description: API documentation for the Library Management System, providing functionality for managing publishers, books, vendors, customers, and rental transactions.
+  version: 1.0.0
+  contact:
+    name: Acme Industries Support
+    url: https://acme.com/support
+    email: support@acme.com
+servers:
+  - url: https://lms.com/publishers
+    description: Production server
+  - url: https://qa.lms.com/publishers
+    description: QA server
+paths:
+  /publishers:
+    get:
+      summary: Get a list of all publishers
+      description: Retrieves a list of all publishers in the database.
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Publisher'
+    post:
+      summary: Create a new publisher
+      description: Creates a new publisher in the database.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Publisher'
+      responses:
+        '201':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publisher'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /publishers/{publisherId}:
+    get:
+      summary: Get a publisher by its ID
+      description: Retrieves a publisher by its ID.
+      parameters:
+        - in: path
+          name: publisherId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the publisher to retrieve.
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publisher'
+        '404':
+          description: Publisher not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Edit an existing publisher
+      description: Updates an existing publisher in the database.
+      parameters:
+        - in: path
+          name: publisherId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: The ID of the publisher to update.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Publisher'
+      responses:
+        '200':
+          description: A successful response.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Publisher'
+        '400':
+          description: Bad request.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Publisher not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    Publisher:
+      type: object
+      required:
+        - publisherName
+      properties:
+        publisherId:
+          type: integer
+          format: int64
+          description: The unique ID of the publisher.
+          readOnly: true
+        publisherName:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: The name of the publisher.
+        publisherAddress:
+          type: string
+          maxLength: 255
+          description: The address of the publisher.
+        publisherPhone:
+          type: string
+          maxLength: 255
+          description: The phone number of the publisher.
+        publisherEmail:
+          type: string
+          format: email
+          maxLength: 255
+          description: The email address of the publisher.
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A human-readable error message.
+        status:
+          type: integer
+          description: The HTTP status code of the error.
+```

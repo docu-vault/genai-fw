@@ -1,0 +1,170 @@
+```java
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.retry.annotation.EnableRetry;
+import org.springframework.web.bind.annotation.*;
+
+@SpringBootApplication
+@EnableRetry
+public class BookApiApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(BookApiApplication.class, args);
+    }
+
+    @Bean
+    public BookService bookService() {
+        return new BookServiceImpl();
+    }
+}
+
+@RestController
+@RequestMapping("/books")
+class BookController {
+
+    private final BookService bookService;
+
+    public BookController(BookService bookService) {
+        this.bookService = bookService;
+    }
+
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return bookService.getAllBooks();
+    }
+
+    @PostMapping
+    public Book createBook(@RequestBody BookRequest bookRequest) {
+        return bookService.createBook(bookRequest);
+    }
+
+    @GetMapping("/{book_id}")
+    public Book getBookById(@PathVariable String book_id) {
+        return bookService.getBookById(book_id);
+    }
+
+    @PutMapping("/{book_id}")
+    public Book updateBook(@PathVariable String book_id, @RequestBody BookRequest bookRequest) {
+        return bookService.updateBook(book_id, bookRequest);
+    }
+}
+
+interface BookService {
+
+    List<Book> getAllBooks();
+
+    Book createBook(BookRequest bookRequest);
+
+    Book getBookById(String book_id);
+
+    Book updateBook(String book_id, BookRequest bookRequest);
+}
+
+class BookServiceImpl implements BookService {
+
+    private final BookRepository bookRepository;
+
+    public BookServiceImpl(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
+
+    @Override
+    public List<Book> getAllBooks() {
+        return bookRepository.findAll();
+    }
+
+    @Override
+    @Retry(maxAttempts = 3, delay = 1000)
+    public Book createBook(BookRequest bookRequest) {
+        Book book = new Book();
+        book.setTitle(bookRequest.getTitle());
+        book.setAuthor(bookRequest.getAuthor());
+        book.setPublisher(bookRequest.getPublisher());
+        book.setYearOfPublication(bookRequest.getYearOfPublication());
+        book.setIsbn(bookRequest.getIsbn());
+        book.setPrice(bookRequest.getPrice());
+        book.setQuantityInStock(bookRequest.getQuantityInStock());
+        book.setQuantityAvailable(bookRequest.getQuantityAvailable());
+
+        return bookRepository.save(book);
+    }
+
+    @Override
+    public Book getBookById(String book_id) {
+        return bookRepository.findById(book_id).orElseThrow(() -> new BookNotFoundException(book_id));
+    }
+
+    @Override
+    @Retry(maxAttempts = 3, delay = 1000)
+    public Book updateBook(String book_id, BookRequest bookRequest) {
+        Book book = bookRepository.findById(book_id).orElseThrow(() -> new BookNotFoundException(book_id));
+
+        book.setTitle(bookRequest.getTitle());
+        book.setAuthor(bookRequest.getAuthor());
+        book.setPublisher(bookRequest.getPublisher());
+        book.setYearOfPublication(bookRequest.getYearOfPublication());
+        book.setIsbn(bookRequest.getIsbn());
+        book.setPrice(bookRequest.getPrice());
+        book.setQuantityInStock(bookRequest.getQuantityInStock());
+        book.setQuantityAvailable(bookRequest.getQuantityAvailable());
+
+        return bookRepository.save(book);
+    }
+}
+
+class BookRepository {
+
+    // In a real application, this would be a database repository
+    private final Map<String, Book> books = new HashMap<>();
+
+    public List<Book> findAll() {
+        return new ArrayList<>(books.values());
+    }
+
+    public Book findById(String book_id) {
+        return books.get(book_id);
+    }
+
+    public Book save(Book book) {
+        books.put(book.getId(), book);
+        return book;
+    }
+}
+
+class Book {
+
+    private String id;
+    private String title;
+    private String author;
+    private Long publisher;
+    private Integer yearOfPublication;
+    private String isbn;
+    private Double price;
+    private Integer quantityInStock;
+    private Integer quantityAvailable;
+
+    // Getters and setters omitted for brevity
+}
+
+class BookRequest {
+
+    private String title;
+    private String author;
+    private Long publisher;
+    private Integer yearOfPublication;
+    private String isbn;
+    private Double price;
+    private Integer quantityInStock;
+    private Integer quantityAvailable;
+
+    // Getters and setters omitted for brevity
+}
+
+class BookNotFoundException extends RuntimeException {
+
+    public BookNotFoundException(String book_id) {
+        super("Book not found with id: " + book_id);
+    }
+}
+```

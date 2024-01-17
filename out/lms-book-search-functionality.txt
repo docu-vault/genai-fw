@@ -1,0 +1,138 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Book Search App</title>
+  <link href="https://unpkg.com/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/angular@1.8.3/angular.min.js"></script>
+  <script src="https://unpkg.com/angular-ui-router@1.0.20/release/angular-ui-router.min.js"></script>
+  <script src="app.js"></script>
+</head>
+<body ng-app="bookSearchApp">
+  <div class="container">
+    <h1>Book Search App</h1>
+    <div ui-view></div>
+  </div>
+
+  <script>
+    var app = angular.module('bookSearchApp', ['ui.router']);
+
+    app.config(function($stateProvider, $urlRouterProvider) {
+      $stateProvider
+        .state('home', {
+          url: '/',
+          templateUrl: 'home.html',
+          controller: 'HomeController'
+        })
+        .state('search', {
+          url: '/search',
+          templateUrl: 'search.html',
+          controller: 'SearchController'
+        })
+        .state('book', {
+          url: '/book/:bookId',
+          templateUrl: 'book.html',
+          controller: 'BookController'
+        });
+
+      $urlRouterProvider.otherwise('/');
+    });
+
+    app.controller('HomeController', function($scope) {
+      $scope.message = 'Welcome to the Book Search App!';
+    });
+
+    app.controller('SearchController', function($scope, $http) {
+      $scope.searchBy = 'author';
+      $scope.searchTerm = '';
+      $scope.searchResults = [];
+
+      $scope.search = function() {
+        var url = 'https://lms.com/books/search?';
+        if ($scope.searchBy === 'author') {
+          url += 'author=' + $scope.searchTerm;
+        } else if ($scope.searchBy === 'title') {
+          url += 'title=' + $scope.searchTerm;
+        } else if ($scope.searchBy === 'isbn') {
+          url += 'isbn=' + $scope.searchTerm;
+        }
+
+        $http.get(url).then(function(response) {
+          $scope.searchResults = response.data;
+        });
+      };
+    });
+
+    app.controller('BookController', function($scope, $http, $stateParams) {
+      $scope.book = {};
+
+      $http.get('https://lms.com/books/' + $stateParams.bookId).then(function(response) {
+        $scope.book = response.data;
+      });
+    });
+  </script>
+</body>
+</html>
+```
+
+```html
+<!-- home.html -->
+<div class="jumbotron">
+  <h1>Welcome to the Book Search App!</h1>
+  <p>This app allows you to search for books by author, title, or ISBN.</p>
+  <p><a class="btn btn-primary btn-lg" href="#/search" role="button">Search for a book</a></p>
+</div>
+```
+
+```html
+<!-- search.html -->
+<div class="container">
+  <form ng-submit="search()">
+    <div class="form-group">
+      <label for="searchBy">Search by:</label>
+      <select ng-model="searchBy" class="form-control">
+        <option value="author">Author</option>
+        <option value="title">Title</option>
+        <option value="isbn">ISBN</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="searchTerm">Search term:</label>
+      <input type="text" ng-model="searchTerm" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Search</button>
+  </form>
+
+  <div class="row" ng-if="searchResults.length > 0">
+    <div class="col-sm-6" ng-repeat="book in searchResults">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">{{book.title}}</h5>
+          <p class="card-text">{{book.author}}</p>
+          <a href="#/book/{{book.id}}" class="btn btn-primary">View book</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="alert alert-info" ng-if="searchResults.length === 0">
+    No results found.
+  </div>
+</div>
+```
+
+```html
+<!-- book.html -->
+<div class="container">
+  <div class="card">
+    <div class="card-body">
+      <h5 class="card-title">{{book.title}}</h5>
+      <p class="card-text">{{book.author}}</p>
+      <p class="card-text">ISBN: {{book.isbn}}</p>
+      <p class="card-text">Price: {{book.price}}</p>
+      <p class="card-text">Quantity in stock: {{book.quantity_in_stock}}</p>
+      <p class="card-text">Quantity available: {{book.quantity_available}}</p>
+    </div>
+  </div>
+</div>
+```

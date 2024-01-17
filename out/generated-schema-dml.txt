@@ -1,0 +1,30 @@
+```sql
+-- Insert data into the "typical_order" table
+INSERT INTO typical_order (order_date, customer_id, total_price) VALUES
+('2023-02-13 18:31:12', 1, 123.45),
+('2023-03-08 12:09:34', 2, 234.56),
+('2023-04-12 09:23:06', 3, 345.67),
+('2023-05-19 15:47:29', 1, 456.78),
+('2023-06-26 11:19:52', 2, 567.89);
+
+
+-- Insert data into the "products" table
+INSERT INTO products (name, price) VALUES
+('iPhone 14 Pro Max', 999.00),
+('Samsung Galaxy S23 Ultra', 1199.00),
+('Google Pixel 7 Pro', 899.00),
+('OnePlus 11', 699.00),
+('Nothing Phone (1)', 499.00);
+
+
+-- Insert data into the "order_items" table
+INSERT INTO order_items (order_id, product_id, quantity) VALUES
+(1, 1, 2),
+(1, 3, 1),
+(2, 2, 3),
+(2, 4, 2),
+(3, 5, 1),
+(4, 1, 1),
+(4, 2, 2),
+(5, 3, 3);
+```

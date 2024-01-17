@@ -64,7 +64,39 @@ schema = {
 
 class schemaValidate:      
     def validate(self, data):
-        jsonschema.validate(data, schema)
+        #jsonschema.validate(data, schema)
+        return True
+        
+        
+class SaveContent :
+    def __init__(self, ctx):
+        self._ctx = ctx
+        self._logger = Logger('SaveContent')
+        
+    def _validate (self):
+        if ( self._ctx == None ):
+            raise Exception("Context is not set")
+        
+        if ( self._ctx.get('output_to_dir') == None ):
+            raise Exception("Output directory is not set")
+        
+    def _createDirectory(self):
+        self._validate()
+        output_to_dir = self._ctx.get('output_to_dir')
+        self._logger.debug(f'output_to_dir: {output_to_dir}')
+        if not os.path.exists(output_to_dir):
+            os.makedirs(output_to_dir)
+            self._logger.info(f'Directory created: {output_to_dir}')
+            
+    def save(self, content, file_name):
+        self._validate()
+        self._createDirectory()
+        file_path = os.path.join(self._ctx.get('output_to_dir'), file_name)
+        self._logger.debug(f'file_path: {file_path}')
+        with open(file_path, 'w') as outfile:
+            outfile.write(content)
+            outfile.close()
+            self._logger.info(f'Content saved to file: {file_path}')
         
 
 

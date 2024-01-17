@@ -1,0 +1,12 @@
+version : v1
+kind : openapi-to-springboot-microservices
+metadata:
+    name : 04-lms-books-microservices
+    description : "Generate java springboot microservices given the openapi spec"
+spec:
+    prompts:
+        - text : |
+            Generate java, springboot based micro services code with error handling and 
+            retry mechanisms based on the openapi spec given
+          ctx :
+            - output-of: 03-lms-books-openapi-spec
